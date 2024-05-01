@@ -94,7 +94,7 @@ architecture top_basys3_arch of top_basys3 is
   
 signal w_clk : std_logic;
 signal w_A, w_B, w_res, w_mux : std_logic_vector(7 downto 0);
-signal w_cyc, w_sign, w_hund, w_tens, w_ones, w_seg : std_logic_vector(3 downto 0);
+signal w_cyc, w_sign, w_hund, w_tens, w_ones, w_seg, w_sel : std_logic_vector(3 downto 0);
 
 
   
@@ -108,9 +108,9 @@ begin
                    i_D3         => w_sign,
                    i_D2         => w_hund,
                    i_D1         => w_tens,
-                   i_D0         => w_ones
+                   i_D0         => w_ones,
 --                   o_data        : out STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
---                   o_sel        : out STD_LOGIC_VECTOR (3 downto 0)    -- selected data line (one-cold)
+                   o_sel        => w_sel   -- selected data line (one-cold)
             );
 
     
@@ -149,7 +149,33 @@ begin
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
+w_mux <= w_A when (w_cyc = "0001") else
+         w_B when (w_cyc = "0010") else
+         w_res when (w_cyc = "0100") else
+         "00000000";
+         
+w_sign <= "0000";
+w_hund <= "0000";         
+w_tens <= w_mux(7 downto 4);
+w_ones <= w_mux(3 downto 0);
 	
 	
+	
+	--ground leds and set ans--
+led(12) <= '0';
+led(11) <= '0';
+led(10) <= '0';
+led(9) <= '0';
+led(8) <= '0';
+led(7) <= '0';
+led(6) <= '0';
+led(5) <= '0';
+led(4) <= '0';
+
+an(0) <= w_sel(0);
+an(1) <= w_sel(1);
+an(2) <= w_sel(2);
+an(3) <= w_sel(3);
+
 	
 end top_basys3_arch;
