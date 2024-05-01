@@ -57,7 +57,7 @@ begin
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
+	w_addsub <= std_logic_vector(unsigned(i_A) + unsigned(i_B));
 	
-	
-	
+	o_res <= w_addsub when ((i_op(1) = '0') and (i_op(2) = '0')) else "00000000";
 end behavioral;
