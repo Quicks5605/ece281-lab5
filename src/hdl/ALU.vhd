@@ -46,6 +46,9 @@ end ALU;
 architecture behavioral of ALU is 
   
 	-- declare components and signals
+signal w_sel_addsub, w_AND, w_OR, w_LS, w_RS, w_sel_shift, w_out, w_addsub : std_logic_vector (7 downto 0);
+signal w_Cout : std_logic;
+
 
   
 begin
