@@ -26,17 +26,126 @@ library ieee;
 
 
 entity top_basys3 is
--- TODO
+    port(
+        -- inputs
+        clk     :   in std_logic; -- native 100MHz FPGA clock
+        sw      :   in std_logic_vector(7 downto 0);
+        btnU    :   in std_logic; -- reset
+        btnC    :   in std_logic; 
+        
+        -- outputs
+        led :   out std_logic_vector(15 downto 0);
+        -- 7-segment display segments (active-low cathodes)
+        seg :   out std_logic_vector(6 downto 0);
+        -- 7-segment display active-low enables (anodes)
+        an  :   out std_logic_vector(3 downto 0)
+    );
 end top_basys3;
 
 architecture top_basys3_arch of top_basys3 is 
   
 	-- declare components and signals
 
+    component TDM4 is
+            generic ( constant k_WIDTH : natural  := 4); -- bits in input and output
+            port ( i_clk        : in  STD_LOGIC;
+                   i_reset        : in  STD_LOGIC; -- asynchronous
+                   i_D3         : in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+                   i_D2         : in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+                   i_D1         : in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+                   i_D0         : in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+                   o_data        : out STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+                   o_sel        : out STD_LOGIC_VECTOR (3 downto 0)    -- selected data line (one-cold)
+            );
+        end component TDM4;
+    
+    component clock_divider is
+            generic ( constant k_DIV : natural := 2    ); -- How many clk cycles until slow clock toggles
+                                                       -- Effectively, you divide the clk double this 
+                                                       -- number (e.g., k_DIV := 2 --> clock divider of 4)
+            port (  i_clk    : in std_logic;
+                    i_reset  : in std_logic;           -- asynchronous
+                    o_clk    : out std_logic           -- divided (slow) clock
+            );
+        end component clock_divider;
+  
+  component ALU is
+  
+           port (  i_A    :   in std_logic_vector (7 downto 0);
+                   i_B    :   in std_logic_vector (7 downto 0);       
+                   i_op   :   in std_logic_vector (2 downto 0);
+                   o_flag :   out std_logic_vector(2 downto 0);
+                   o_res  :   out std_logic_vector(7 downto 0)                       
+            );
+                end component ALU;
+
+  component Controller is
+    Port (     btnC : in STD_LOGIC;
+               btnU : in STD_LOGIC;
+                o_S : out STD_LOGIC_VECTOR (3 downto 0)
+                );
+  end component Controller;
+          
+  component sevenSegDecoder is
+      Port ( i_D : in STD_LOGIC_VECTOR (3 downto 0);
+             o_S : out STD_LOGIC_VECTOR (6 downto 0)
+             );
+  end component sevenSegDecoder;
+  
+signal w_clk : std_logic;
+signal w_A, w_B, w_res, w_mux : std_logic_vector(7 downto 0);
+signal w_cyc, w_sign, w_hund, w_tens, w_ones, w_seg : std_logic_vector(3 downto 0);
+
+
   
 begin
 	-- PORT MAPS ----------------------------------------
+    TDM4_inst : TDM4
+            generic map (k_WIDTH => 4) -- bits in input and output
+            port map ( 
+                   i_clk   => w_clk,
+                   i_reset    => btnU,
+                   i_D3         => w_sign,
+                   i_D2         => w_hund,
+                   i_D1         => w_tens,
+                   i_D0         => w_ones
+--                   o_data        : out STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+--                   o_sel        : out STD_LOGIC_VECTOR (3 downto 0)    -- selected data line (one-cold)
+            );
 
+    
+     clock_divider_inst : clock_divider
+            generic map (k_DIV => 50000) -- How many clk cycles until slow clock toggles
+
+            port map (  i_clk => clk,
+                        i_reset  => btnU,   
+                        o_clk   => w_clk           -- divided (slow) clock
+            );
+
+  
+  ALU_inst : ALU
+  
+           port map (  i_A    => w_A,
+                       i_B    => w_B,          
+                       i_op   => sw( 2 downto 0),
+                       o_flag => led(15 downto 13),
+                       o_res  => w_res                      
+            );
+            
+  Controller_inst : Controller
+    Port map ( btnC => btnC,
+               btnU => btnU,
+               o_S => w_cyc
+                );
+
+          
+  sevenSegDecoder_inst : sevenSegDecoder
+      Port map ( i_D => w_seg,
+                 o_S => seg
+             );
+
+
+ 
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
