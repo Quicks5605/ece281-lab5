@@ -29,7 +29,7 @@ entity top_basys3 is
     port(
         -- inputs
         clk     :   in std_logic; -- native 100MHz FPGA clock
-        sw      :   in std_logic_vector(7 downto 0);
+        sw      :   in std_logic_vector(15 downto 0);
         btnU    :   in std_logic; -- reset
         btnC    :   in std_logic; --adv
         btnL    :   in std_logic; --stability
@@ -97,7 +97,17 @@ architecture top_basys3_arch of top_basys3 is
              );
   end component sevenSegDecoder;
   
-signal w_clk : std_logic;
+  component twoscomp_decimal is
+      port (
+          i_binary: in std_logic_vector(7 downto 0);
+          o_negative: out std_logic;
+          o_hundreds: out std_logic_vector(3 downto 0);
+          o_tens: out std_logic_vector(3 downto 0);
+          o_ones: out std_logic_vector(3 downto 0)
+      );
+  end component twoscomp_decimal;
+  
+signal w_clk, w_neg : std_logic;
 signal w_A, w_B, w_res, w_mux : std_logic_vector(7 downto 0);
 signal w_cyc, w_sign, w_hund, w_tens, w_ones, w_seg, w_sel : std_logic_vector(3 downto 0);
 
@@ -132,7 +142,7 @@ begin
   
            port map (  i_A    => w_A,
                        i_B    => w_B,          
-                       i_op   => sw( 2 downto 0),
+                       i_op   => sw( 15 downto 13),
                        o_flag => led(15 downto 13),
                        o_res  => w_res                      
             );
@@ -153,6 +163,14 @@ begin
                  o_S => seg
              );
 
+ twoscomp_inst : twoscomp_decimal
+    port map(
+        i_binary => w_mux,
+        o_negative => w_neg,
+        o_hundreds => w_hund,
+        o_tens => w_tens,
+        o_ones => w_ones
+    );
 
  
 	
@@ -163,10 +181,8 @@ w_mux <= w_A when (w_cyc = "0001") else
          w_res when (w_cyc = "0100") else
          "00000000";
          
-w_sign <= "0000";
-w_hund <= "0000";         
-w_tens <= w_mux(7 downto 4);
-w_ones <= w_mux(3 downto 0);
+w_sign <= "1111" when (w_neg = '1') else "0000";
+
 	
 	
 	

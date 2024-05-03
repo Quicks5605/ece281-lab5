@@ -48,18 +48,19 @@ end ALU;
 architecture behavioral of ALU is 
   
 	-- declare components and signals
-signal w_sel_addsub, w_AND, w_OR, w_LS, w_RS, w_sel_shift, w_out, w_add, w_sub : std_logic_vector (7 downto 0);
+signal w_sel_addsub,w_B, w_AND, w_OR, w_LS, w_RS, w_sel_shift, w_out, w_add, w_sub : std_logic_vector (7 downto 0);
 signal w_Cout : std_logic;
-
+signal w_Cin : std_logic_vector (0 downto 0);
 
   
 begin
 	-- PORT MAPS ----------------------------------------
-
-	
+w_B <= not i_B when i_op = "100" else i_B;
+w_Cin <= i_op(2 downto 2);	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
-	w_add <= std_logic_vector(unsigned(i_A) + unsigned(i_B));
-	
-	o_res <= w_add; --when (i_op = "000") else "00000000";
+w_add <= std_logic_vector(unsigned(i_A) + unsigned(i_B));
+w_sub <= std_logic_vector(unsigned(i_A) + unsigned(w_B)+ unsigned(w_Cin));
+o_res <= w_add when (i_op =  "000") else
+	     w_sub when (i_op =  "100");
 end behavioral;
