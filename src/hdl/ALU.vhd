@@ -43,6 +43,7 @@ entity ALU is
      );
 end ALU;
 
+
 architecture behavioral of ALU is 
   
 	-- declare components and signals

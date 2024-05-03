@@ -80,10 +80,13 @@ architecture top_basys3_arch of top_basys3 is
                 end component ALU;
 
   component Controller is
-    Port (     btnC : in STD_LOGIC;
-               btnU : in STD_LOGIC;
-                o_S : out STD_LOGIC_VECTOR (3 downto 0)
-                );
+    Port (     i_adv : in STD_LOGIC;
+               i_reset : in STD_LOGIC;
+               i_input : in STD_LOGIC_VECTOR (7 downto 0);
+               o_S : out STD_LOGIC_VECTOR (3 downto 0);
+               o_A : out STD_LOGIC_VECTOR (7 downto 0);
+               o_B : out STD_LOGIC_VECTOR (7 downto 0)
+               );
   end component Controller;
           
   component sevenSegDecoder is
@@ -133,9 +136,12 @@ begin
             );
             
   Controller_inst : Controller
-    Port map ( btnC => btnC,
-               btnU => btnU,
-               o_S => w_cyc
+    Port map ( i_adv => btnC,
+               i_reset => btnU,
+               i_input => sw(7 downto 0),
+               o_S => w_cyc,
+               o_A => w_A,
+               o_B => w_B
                 );
 
           
@@ -177,5 +183,9 @@ an(1) <= w_sel(1);
 an(2) <= w_sel(2);
 an(3) <= w_sel(3);
 
+led(3) <= w_cyc(3);
+led(2) <= w_cyc(2);
+led(1) <= w_cyc(1);
+led(0) <= w_cyc(0);
 	
 end top_basys3_arch;
