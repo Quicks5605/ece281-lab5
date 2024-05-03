@@ -24,10 +24,11 @@
 --| ALU OPCODES:
 --|
 --|     ADD     000
---|
---|
---|
---|
+--|     SUB     100
+--|     Left    011
+--|     Right   111
+--|     AND     X01
+--|     OR      X10
 --+----------------------------------------------------------------------------
 library ieee;
   use ieee.std_logic_1164.all;
@@ -47,7 +48,7 @@ end ALU;
 architecture behavioral of ALU is 
   
 	-- declare components and signals
-signal w_sel_addsub, w_AND, w_OR, w_LS, w_RS, w_sel_shift, w_out, w_addsub : std_logic_vector (7 downto 0);
+signal w_sel_addsub, w_AND, w_OR, w_LS, w_RS, w_sel_shift, w_out, w_add, w_sub : std_logic_vector (7 downto 0);
 signal w_Cout : std_logic;
 
 
@@ -58,7 +59,7 @@ begin
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
-	w_addsub <= std_logic_vector(unsigned(i_A) + unsigned(i_B));
+	w_add <= std_logic_vector(unsigned(i_A) + unsigned(i_B));
 	
-	o_res <= w_addsub when ((i_op(1) = '0') and (i_op(2) = '0')) else "00000000";
+	o_res <= w_add; --when (i_op = "000") else "00000000";
 end behavioral;

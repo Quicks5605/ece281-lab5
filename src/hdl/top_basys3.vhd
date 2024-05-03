@@ -31,7 +31,8 @@ entity top_basys3 is
         clk     :   in std_logic; -- native 100MHz FPGA clock
         sw      :   in std_logic_vector(7 downto 0);
         btnU    :   in std_logic; -- reset
-        btnC    :   in std_logic; 
+        btnC    :   in std_logic; --adv
+        btnL    :   in std_logic; --stability
         
         -- outputs
         led :   out std_logic_vector(15 downto 0);
@@ -82,6 +83,7 @@ architecture top_basys3_arch of top_basys3 is
   component Controller is
     Port (     i_adv : in STD_LOGIC;
                i_reset : in STD_LOGIC;
+               i_stable : in std_logic;
                i_input : in STD_LOGIC_VECTOR (7 downto 0);
                o_S : out STD_LOGIC_VECTOR (3 downto 0);
                o_A : out STD_LOGIC_VECTOR (7 downto 0);
@@ -112,7 +114,7 @@ begin
                    i_D2         => w_hund,
                    i_D1         => w_tens,
                    i_D0         => w_ones,
---                   o_data        : out STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
+                   o_data       => w_seg,
                    o_sel        => w_sel   -- selected data line (one-cold)
             );
 
@@ -138,6 +140,7 @@ begin
   Controller_inst : Controller
     Port map ( i_adv => btnC,
                i_reset => btnU,
+               i_stable => btnL,
                i_input => sw(7 downto 0),
                o_S => w_cyc,
                o_A => w_A,
