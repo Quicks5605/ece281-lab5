@@ -108,7 +108,7 @@ architecture top_basys3_arch of top_basys3 is
   end component twoscomp_decimal;
   
 signal w_clk, w_neg : std_logic;
-signal w_A, w_B, w_res, w_mux : std_logic_vector(7 downto 0);
+signal w_A, w_B, w_res, w_mux : std_logic_vector(7 downto 0)  := "00000000";
 signal w_cyc, w_sign, w_hund, w_tens, w_ones, w_seg, w_sel : std_logic_vector(3 downto 0);
 
 

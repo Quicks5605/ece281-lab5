@@ -47,9 +47,9 @@ end ALU;
 architecture behavioral of ALU is 
   
 	-- declare components and signals
-signal w_sel_shift, w_out, w_addsub, w_A, w_B, w_LS, w_RS, w_res: std_logic_vector (7 downto 0);
+signal w_sel_shift, w_out, w_addsub, w_A, w_B, w_LS, w_RS, w_res: std_logic_vector (7 downto 0) := "00000000";
 signal w_CoutFLG, w_overflow, w_CPUzero : std_logic;
-signal w_Cin : std_logic_vector (0 downto 0);
+signal w_Cin : std_logic_vector (0 downto 0) := "0";
   
 begin
 	-- PORT MAPS ----------------------------------------
@@ -65,7 +65,8 @@ w_res <= w_addsub when (i_op(1 downto 0)= "00") else
       i_A or i_B when i_op(1 downto 0) = "10" else
       i_A and i_B when i_op(1 downto 0) = "01" else
        w_LS when i_op = "011" else
-       w_RS when i_op = "111";
+       w_RS when i_op = "111" else
+       "00000000";
       
 --w_CoutFLG <= (( (i_A(7) or i_B(7)) and not w_addsub(7)) or (i_A(7) and i_B(7))) when i_op(1 downto 0) = "00";
 --w_overflow <= w_CoutFLG when i_op = "000";
