@@ -31,9 +31,8 @@
 --|     OR      X10
 --+----------------------------------------------------------------------------
 library ieee;
-  use ieee.std_logic_1164.all;
-  use ieee.numeric_std.all;
-
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity ALU is
     port ( i_A    :   in std_logic_vector (7 downto 0);
@@ -48,19 +47,33 @@ end ALU;
 architecture behavioral of ALU is 
   
 	-- declare components and signals
-signal w_sel_addsub,w_B, w_AND, w_OR, w_LS, w_RS, w_sel_shift, w_out, w_add, w_sub : std_logic_vector (7 downto 0);
-signal w_Cout : std_logic;
+signal w_sel_shift, w_out, w_addsub, w_A, w_B, w_LS, w_RS, w_res: std_logic_vector (7 downto 0);
+signal w_CoutFLG, w_overflow, w_CPUzero : std_logic;
 signal w_Cin : std_logic_vector (0 downto 0);
-
   
 begin
 	-- PORT MAPS ----------------------------------------
-w_B <= not i_B when i_op = "100" else i_B;
+w_B <= not i_B when (i_op = "100")else
+       i_B;
+w_addsub <= std_logic_vector(unsigned(i_A) + unsigned(w_B) + unsigned(w_Cin));
+--w_A <= 
 w_Cin <= i_op(2 downto 2);	
-	
-	-- CONCURRENT STATEMENTS ----------------------------
-w_add <= std_logic_vector(unsigned(i_A) + unsigned(i_B));
-w_sub <= std_logic_vector(unsigned(i_A) + unsigned(w_B)+ unsigned(w_Cin));
-o_res <= w_add when (i_op =  "000") else
-	     w_sub when (i_op =  "100");
+--w_LS <= std_logic_vector(shift_left(unsigned(i_A), to_integer(unsigned(i_B))));
+--w_RS <= std_logic_vector(shift_right(unsigned(i_A), to_integer(unsigned(i_B))));
+-- CONCURRENT STATEMENTS ----------------------------
+w_res <= w_addsub when (i_op(1 downto 0)= "00") else
+      i_A or i_B when i_op(1 downto 0) = "10" else
+      i_A and i_B when i_op(1 downto 0) = "01" else
+       w_LS when i_op = "011" else
+       w_RS when i_op = "111";
+      
+--w_CoutFLG <= (( (i_A(7) or i_B(7)) and not w_addsub(7)) or (i_A(7) and i_B(7))) when i_op(1 downto 0) = "00";
+--w_overflow <= w_CoutFLG when i_op = "000";
+--w_CPUzero <= not (w_res or "00000000");
+--o_flag(0) <= w_CoutFLG;
+--o_flag(1) <= w_overflow;
+--o_flag(2) <= w_CPUzero;
+o_res <= w_res;
+
 end behavioral;
+

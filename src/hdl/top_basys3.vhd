@@ -29,7 +29,7 @@ entity top_basys3 is
     port(
         -- inputs
         clk     :   in std_logic; -- native 100MHz FPGA clock
-        sw      :   in std_logic_vector(15 downto 0);
+        sw      :   in std_logic_vector(7 downto 0);
         btnU    :   in std_logic; -- reset
         btnC    :   in std_logic; --adv
         btnL    :   in std_logic; --stability
@@ -142,7 +142,7 @@ begin
   
            port map (  i_A    => w_A,
                        i_B    => w_B,          
-                       i_op   => sw( 15 downto 13),
+                       i_op   => sw(2 downto 0),
                        o_flag => led(15 downto 13),
                        o_res  => w_res                      
             );
