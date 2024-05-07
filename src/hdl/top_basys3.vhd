@@ -29,7 +29,7 @@ entity top_basys3 is
     port(
         -- inputs
         clk     :   in std_logic; -- native 100MHz FPGA clock
-        sw      :   in std_logic_vector(7 downto 0);
+        sw      :   in std_logic_vector(10 downto 0);
         btnU    :   in std_logic; -- reset
         btnC    :   in std_logic; --adv
         btnL    :   in std_logic; --stability
@@ -142,7 +142,7 @@ begin
   
            port map (  i_A    => w_A,
                        i_B    => w_B,          
-                       i_op   => sw(2 downto 0),
+                       i_op   => sw(10 downto 8),
                        o_flag => led(15 downto 13),
                        o_res  => w_res                      
             );
@@ -176,12 +176,14 @@ begin
 	
 	
 	-- CONCURRENT STATEMENTS ----------------------------
-w_mux <= w_A when (w_cyc = "0001") else
-         w_B when (w_cyc = "0010") else
-         w_res when (w_cyc = "0100") else
-         "00000000";
+
          
 w_sign <= "1111" when (w_neg = '1') else "0000";
+
+w_mux <= w_A when w_cyc = "0010" else
+         w_B when w_cyc = "0001" else
+         w_res when w_cyc = "0100" else 
+         "00000000" ;
 
 	
 	

@@ -44,7 +44,6 @@ end Controller;
 
 architecture Behavioral of Controller is
 type state is (state1, state2, state3, state4);
-signal w_S : std_logic_vector (3 downto 0) := "0001";
 signal f_Q, f_Q_next: state;
 signal w_A, w_B : STD_LOGIC_VECTOR(7 downto 0);
 begin
@@ -53,24 +52,27 @@ begin
                 state2 when (f_Q = state1) else
                 state3 when (f_Q = state2) else
                 state4 when (f_Q = state3);
-with f_Q select                
-    w_A <= i_input when state1,
-    "00000000" when state4,
-    w_A  when others;  
-with f_Q select           
-    w_B <= i_input when state2,
-    "00000000" when state4,
-    w_B  when others; 
-    
-o_A <= w_A;
-o_B <= w_B;
+
+
 with f_Q select
     o_S <= "0001" when state1,
            "0010" when state2,
            "0100" when state3,
            "1000" when state4;
+
+with f_Q select                
+    w_B <= i_input when state1,
+    "00000000" when state4,
+    w_B  when others;  
+with f_Q select           
+    w_A <= i_input when state2,
+    "00000000" when state4,
+    w_A  when others; 
+o_A <= w_A;
+o_B <= w_B;    
+
            
-clk : process (i_adv, i_reset)
+advance : process (i_adv, i_reset)
     begin
     if (i_reset ='1') then 
         f_Q <= state4;
@@ -80,6 +82,6 @@ clk : process (i_adv, i_reset)
 
      end if;
       
-end process clk;
+end process advance;
 
 end Behavioral;

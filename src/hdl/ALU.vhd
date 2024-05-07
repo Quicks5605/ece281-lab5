@@ -58,8 +58,8 @@ w_B <= not i_B when (i_op = "100")else
 w_addsub <= std_logic_vector(unsigned(i_A) + unsigned(w_B) + unsigned(w_Cin));
 --w_A <= 
 w_Cin <= i_op(2 downto 2);	
---w_LS <= std_logic_vector(shift_left(unsigned(i_A), to_integer(unsigned(i_B))));
---w_RS <= std_logic_vector(shift_right(unsigned(i_A), to_integer(unsigned(i_B))));
+w_LS <= std_logic_vector(shift_left(unsigned(i_A), 2));
+w_RS <= std_logic_vector(shift_right(unsigned(i_A), 2));
 -- CONCURRENT STATEMENTS ----------------------------
 w_res <= w_addsub when (i_op(1 downto 0)= "00") else
       i_A or i_B when i_op(1 downto 0) = "10" else
