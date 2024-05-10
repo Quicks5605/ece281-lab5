@@ -75,7 +75,7 @@ o_B <= w_B;
 advance : process (i_adv, i_reset)
     begin
     if (i_reset ='1') then 
-        f_Q <= state4;
+        f_Q <= state1;
      elsif ((rising_edge(i_adv)) and (i_stable = '1')) then       
         f_Q <= f_Q_next;
 

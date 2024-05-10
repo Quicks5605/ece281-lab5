@@ -68,12 +68,12 @@ w_res <= w_addsub when (i_op(1 downto 0)= "00") else
        w_RS when i_op = "111" else
        "00000000";
       
---w_CoutFLG <= (( (i_A(7) or i_B(7)) and not w_addsub(7)) or (i_A(7) and i_B(7))) when i_op(1 downto 0) = "00";
---w_overflow <= w_CoutFLG when i_op = "000";
---w_CPUzero <= not (w_res or "00000000");
---o_flag(0) <= w_CoutFLG;
---o_flag(1) <= w_overflow;
---o_flag(2) <= w_CPUzero;
+w_CoutFLG <= (( (i_A(7) or i_B(7)) and not w_addsub(7)) or (i_A(7) and i_B(7))) when i_op(1 downto 0) = "00";
+w_overflow <= w_CoutFLG when i_op = "000";
+w_CPUzero <= '1' when (w_res = "00000000");
+o_flag(0) <= w_CoutFLG;
+o_flag(1) <= w_overflow;
+o_flag(2) <= w_CPUzero;
 o_res <= w_res;
 
 end behavioral;
